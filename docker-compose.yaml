@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  teste_shopper_backend:
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongodb
+    networks:
+      - mongo-network
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+      - MONGO_INITDB_DB=measurement_record
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mongo-network
+
+  mongo-express:
+    image: mongo-express
+    restart: always 
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    networks:
+      - mongo-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  mongo-network:
+    driver: bridge
